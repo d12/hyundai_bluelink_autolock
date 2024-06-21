@@ -1,40 +1,38 @@
 package com.example.hyundai_bluelink_autolock_android
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import com.example.hyundai_bluelink_autolock_android.databinding.FragmentOnboardingIntroBinding
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class FragmentOnboardingIntro : Fragment() {
 
     private var _binding: FragmentOnboardingIntroBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentOnboardingIntroBinding.inflate(inflater, container, false)
         return binding.root
-
     }
 
+//  When the onboarding_second_para textview is clicked, open https://github.com/d12/hyundai_bluelink_autolock in the browser
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-//        binding.buttonFirst.setOnClickListener {
-//            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-//        }
+        binding.onboardingSecondPara.setOnClickListener {
+            val url = "https://github.com/d12/hyundai_bluelink_autolock"
+            val i = Intent(Intent.ACTION_VIEW)
+
+            i.data = Uri.parse(url)
+            startActivity(i)
+        }
     }
 
     override fun onDestroyView() {
