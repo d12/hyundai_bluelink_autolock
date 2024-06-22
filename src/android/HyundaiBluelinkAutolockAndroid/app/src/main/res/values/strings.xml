@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Hyundai-bluelink-autolock-android</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="onboarding_intro_label">Onboarding</string>
+    <string name="onboarding_intro_label">Setup</string>
     <string name="onboarding_permissions_preface_label">Permissions</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
@@ -12,7 +12,17 @@
         <u>View the source code on GitHub.</u>
     </string>
     <string name="onboarding_intro_para_3">
-        It will take less than 5 minutes to set the app up. Please ensure your Hyundai vehicle and your BlueLink credentials are available.
+        It will take just a couple minutes to setup the app. You will need your Hyundai vehicle and your BlueLink credentials handy.
+    </string>
+    <string name="permissions_preface_para_1">
+        This app requires the following permissions to function properly:
+    </string>
+    <string name="permissions_preface_para_2">
+        <b>Bluetooth</b> - Used to detect when you leave your car.\n
+        <b>Location</b> - Required to use some BlueTooth features.\n
+    </string>
+    <string name="permissions_preface_grant">
+        Grant Permissions
     </string>
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

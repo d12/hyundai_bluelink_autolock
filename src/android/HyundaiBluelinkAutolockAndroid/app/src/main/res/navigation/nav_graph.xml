@@ -3,26 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/FragmentOnboardingIntro">
 
     <fragment
-        android:id="@+id/FirstFragment"
+        android:id="@+id/FragmentOnboardingIntro"
         android:name="com.example.hyundai_bluelink_autolock_android.FragmentOnboardingIntro"
         android:label="@string/onboarding_intro_label"
         tools:layout="@layout/fragment_onboarding_intro">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_FragmentOnboardingIntro_to_FragmentOnboardingPermissionsPreface"
+            app:destination="@id/FragmentOnboardingPermissionsPreface" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.hyundai_bluelink_autolock_android.SecondFragment"
+        android:id="@+id/FragmentOnboardingPermissionsPreface"
+        android:name="com.example.hyundai_bluelink_autolock_android.FragmentOnboardingPermissionsPreface"
         android:label="@string/onboarding_permissions_preface_label"
         tools:layout="@layout/fragment_onboarding_permissions_preface">
-
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
     </fragment>
 </navigation>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
+import androidx.navigation.fragment.findNavController
 import android.view.ViewGroup
 import com.example.hyundai_bluelink_autolock_android.databinding.FragmentOnboardingIntroBinding
 
@@ -32,6 +33,10 @@ class FragmentOnboardingIntro : Fragment() {
 
             i.data = Uri.parse(url)
             startActivity(i)
+        }
+
+        binding.onboardingIntroNextButton.setOnClickListener {
+            findNavController().navigate(R.id.action_FragmentOnboardingIntro_to_FragmentOnboardingPermissionsPreface)
         }
     }
 
