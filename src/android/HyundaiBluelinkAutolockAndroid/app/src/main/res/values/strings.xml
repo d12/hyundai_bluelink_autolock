@@ -3,16 +3,18 @@
     <!-- Strings used for fragments for navigation -->
     <string name="onboarding_intro_label">Setup</string>
     <string name="onboarding_permissions_preface_label">Permissions</string>
+    <string name="onboarding_gather_bluelink_credentials_label">Bluelink Credentials</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="verify">Verify Credentials</string>
     <string name="onboarding_intro_para_1">
-        Hi there! This app adds auto-locking to Hyundai cars with BlueLink enabled. It works by sending a lock request via BlueLink shortly after your phone disconnects from your car\'s BlueTooth connection. The app currently only supports Canadian Hyundai vehicles.
+        Hi there! This app adds auto-locking to Hyundai cars with Bluelink enabled. It works by sending a lock request via Bluelink shortly after your phone disconnects from your car\'s BlueTooth connection. The app currently only supports Canadian Hyundai vehicles.
     </string>
     <string name="onboarding_intro_para_2">
         <u>View the source code on GitHub.</u>
     </string>
     <string name="onboarding_intro_para_3">
-        It will take just a couple minutes to setup the app. You will need your Hyundai vehicle and your BlueLink credentials handy.
+        It will take just a couple minutes to setup the app. You will need your Hyundai vehicle and your Bluelink credentials handy.
     </string>
     <string name="permissions_preface_para_1">
         This app requires the following permissions to function properly:
@@ -23,6 +25,9 @@
     </string>
     <string name="permissions_preface_grant">
         Grant Permissions
+    </string>
+    <string name="gather_bluelink_credentials_para_1">
+        Please enter your Bluelink credentials below. These are used to lock your car on your behalf.
     </string>
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
@@ -60,4 +65,6 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

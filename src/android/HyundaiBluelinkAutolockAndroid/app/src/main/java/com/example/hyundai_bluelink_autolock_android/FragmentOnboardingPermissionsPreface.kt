@@ -21,12 +21,14 @@ class FragmentOnboardingPermissionsPreface : Fragment() {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val allPermissionsGranted = permissions.all { it.value }
             if (allPermissionsGranted) {
-                println("All permissions granted.")
+                progressToNextFragment()
             } else {
                 // Handle the permission denied case
                 permissions.forEach { (permission, isGranted) ->
                     if (!isGranted) {
                         println("Permission denied: $permission")
+
+//                        TODO: Error handling here.
                     }
                 }
             }
@@ -44,7 +46,6 @@ class FragmentOnboardingPermissionsPreface : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.permissionsPrefaceGrant.setOnClickListener {
-            println("Beep boop")
             requestBluetoothPermission()
         }
     }
@@ -66,7 +67,12 @@ class FragmentOnboardingPermissionsPreface : Fragment() {
             requestBluetoothPermissionLauncher.launch(permissionsToRequest.toTypedArray())
         } else {
             println("Permissions have already been granted!")
+            progressToNextFragment()
         }
+    }
+
+    private fun progressToNextFragment() {
+        findNavController().navigate(R.id.action_FragmentOnboardingPermissionsPreface_to_FragmentOnboardingGatherBluelinkCredentials)
     }
 
     override fun onDestroyView() {
