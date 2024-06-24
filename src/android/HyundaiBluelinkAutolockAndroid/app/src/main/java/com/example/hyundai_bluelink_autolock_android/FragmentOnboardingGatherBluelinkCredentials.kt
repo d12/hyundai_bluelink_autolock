@@ -9,14 +9,19 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import com.google.android.material.textfield.TextInputLayout
 
 class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
 
     private lateinit var emailEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var pinEditText: EditText
-    private lateinit var countrySpinner: Spinner
+    private lateinit var countryAutoCompleteTextView: AutoCompleteTextView
     private lateinit var verifyButton: Button
+
+    private val countries = listOf(
+        Country("Canada", R.drawable.ca_80x)
+    )
 
     private fun verifyClicked() {
         println("Wee woo we got clicked!")
@@ -39,7 +44,7 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
         emailEditText = view.findViewById(R.id.email)
         passwordEditText = view.findViewById(R.id.password)
         pinEditText = view.findViewById(R.id.pin)
-        countrySpinner = view.findViewById(R.id.country_selector)
+        countryAutoCompleteTextView = view.findViewById(R.id.country_selector)
         verifyButton = view.findViewById(R.id.gather_bluelink_credentials_verify)
 
 //        Handler for verify button press
@@ -47,37 +52,18 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
             verifyClicked()
         }
 
-        // Set up Spinner adapter and listener
-        val countries = listOf(
-            Country("Country", null), // Placeholder
-            Country("Canada", R.drawable.ca_80x)
-            // Add other countries here
-        )
-
+        // Set up AutoCompleteTextView adapter
         val adapter = CustomSpinnerWithHintAdapter(
             requireContext(),
-            R.layout.country_spinner_item,
             countries
         )
-        adapter.setDropDownViewResource(R.layout.country_spinner_item)
-        countrySpinner.adapter = adapter
+        countryAutoCompleteTextView.setAdapter(adapter)
 
-        // Add TextWatchers and OnItemSelectedListener
+        // Add TextWatchers
         emailEditText.addTextChangedListener(textWatcher)
         passwordEditText.addTextChangedListener(textWatcher)
         pinEditText.addTextChangedListener(textWatcher)
-        countrySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                checkFieldsForEmptyValues()
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
+        countryAutoCompleteTextView.addTextChangedListener(textWatcher)
 
         // Initially disable the button
         verifyButton.isEnabled = false
@@ -99,12 +85,12 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
         val email = emailEditText.text.toString()
         val password = passwordEditText.text.toString()
         val pin = pinEditText.text.toString()
-        val countryPosition = countrySpinner.selectedItemPosition
+        val country = countryAutoCompleteTextView.text.toString()
 
         verifyButton.isEnabled = email.isNotEmpty() &&
                 password.isNotEmpty() &&
                 pin.isNotEmpty() &&
                 pin.length == 4 &&
-                countryPosition != 0 // Assuming 0 is the position of the default "Country" placeholder
+                country.isNotEmpty() && country != "Country"
     }
 }

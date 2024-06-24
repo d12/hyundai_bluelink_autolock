@@ -8,49 +8,40 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 
-class CustomSpinnerWithHintAdapter(context: Context, resource: Int, objects: List<Country>) :
-    ArrayAdapter<Country>(context, resource, objects) {
+data class Country(val name: String, val flagResId: Int) {
+    override fun toString(): String {
+        return name
+    }
+}
 
-    override fun isEnabled(position: Int): Boolean {
-        // Disable the first item from Spinner
-        // First item will be used for hint
-        return position != 0
+class CustomSpinnerWithHintAdapter(context: Context, countries: List<Country>) :
+    ArrayAdapter<Country>(context, 0, countries) {
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        return createViewFromResource(position, convertView, parent, R.layout.country_spinner_item)
     }
 
     override fun getDropDownView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return getCustomView(position, convertView, parent)
+        return createViewFromResource(position, convertView, parent, R.layout.country_spinner_item)
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        return getCustomView(position, convertView, parent)
-    }
-
-    private fun getCustomView(position: Int, convertView: View?, parent: ViewGroup): View {
-        val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val view = convertView ?: inflater.inflate(R.layout.country_spinner_item, parent, false)
-
-        val imageViewFlag = view.findViewById<ImageView>(R.id.imageView_flag)
-        val textViewCountry = view.findViewById<TextView>(R.id.textView_country)
-
+    private fun createViewFromResource(
+        position: Int,
+        convertView: View?,
+        parent: ViewGroup,
+        resource: Int
+    ): View {
+        val view = convertView ?: LayoutInflater.from(context).inflate(resource, parent, false)
         val country = getItem(position)
 
+        val flagIcon = view.findViewById<ImageView>(R.id.imageView_flag)
+        val countryName = view.findViewById<TextView>(R.id.textView_country)
+
         country?.let {
-            if (position == 0) {
-                textViewCountry.setTextColor(context.resources.getColor(android.R.color.darker_gray))
-            } else {
-                textViewCountry.setTextColor(context.resources.getColor(android.R.color.black))
-            }
-            if (it.flagResId == null) {
-                imageViewFlag.visibility = View.GONE
-            } else {
-                imageViewFlag.visibility = View.VISIBLE
-                imageViewFlag.setImageResource(it.flagResId)
-            }
-            textViewCountry.text = it.name
+            flagIcon.setImageResource(it.flagResId)
+            countryName.text = it.name
         }
 
         return view
     }
 }
-
-data class Country(val name: String, val flagResId: Int?)
