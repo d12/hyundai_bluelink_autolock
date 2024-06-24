@@ -9,7 +9,14 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.example.hyundai_bluelink_autolock_android.api.BluelinkApiFactory
+import com.example.hyundai_bluelink_autolock_android.api.BluelinkCountry
+import com.example.hyundai_bluelink_autolock_android.api.BluelinkIncorrectCredentialsError
+import com.example.hyundai_bluelink_autolock_android.api.BluelinkUnknownError
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
+import java.io.IOException
 
 class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
 
@@ -23,12 +30,42 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
         Country("Canada", R.drawable.ca_80x)
     )
 
-    private fun verifyClicked() {
-        println("Wee woo we got clicked!")
+    private fun showInvalidCredentialsMessage() {
+        Toast.makeText(
+            requireContext(),
+            "Your Bluelink credentials are invalid, please try again.",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    private fun verifyClicked() {
+        val email = emailEditText.text.toString()
+        val password = passwordEditText.text.toString()
+        val pin = pinEditText.text.toString()
+        val country = countryAutoCompleteTextView.text.toString()
+
+        val bluelinkCountry = when (country) {
+            "Canada" -> BluelinkCountry.CANADA
+            else -> throw IllegalArgumentException("Invalid country")
+        }
+
+        val bluelinkApi = BluelinkApiFactory.getClient(bluelinkCountry)
+
+        lifecycleScope.launch {
+            try {
+                val credentialsValid = bluelinkApi.verifyCredentials(email, password, pin)
+                if (credentialsValid) {
+                    println("Valid credentials!")
+                } else {
+                    // Credentials are invalid
+                    showInvalidCredentialsMessage()
+                }
+            } catch (e: BluelinkIncorrectCredentialsError) {
+                showInvalidCredentialsMessage()
+            } catch (e: BluelinkUnknownError) {
+                showInvalidCredentialsMessage()
+            }
+        }
     }
 
     override fun onCreateView(
