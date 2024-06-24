@@ -10,11 +10,12 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.IOException
 
 class BluelinkCanadaApi : BluelinkApi {
 
     private val client = OkHttpClient()
+    private val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+    private val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
 
     override suspend fun lockCar(apiKey: String, pin: String) {
         // Implementation not yet provided
@@ -23,49 +24,17 @@ class BluelinkCanadaApi : BluelinkApi {
 
     override suspend fun getApiKey(username: String, password: String): String {
         val url = "https://mybluelink.ca/tods/api/v2/login"
-        val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val requestBody = """{"loginId": "$username", "password": "$password"}""".toRequestBody(jsonMediaType)
-
-        val request = Request.Builder()
-            .url(url)
-            .post(requestBody)
-            .addHeader("From", "CWP")
-            .addHeader("Language", "0")
-            .addHeader("offset", "-4")
-            .addHeader("content-type", "application/json;charset=UTF-8")
-            .build()
+        val request = buildRequest(url, requestBody)
 
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) throw BluelinkUnknownError("Unexpected code $response")
 
-                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                val responseAdapter = moshi.adapter(BluelinkLoginResponse::class.java)
-                val responseBody = response.body?.string()
+                val responseBody = response.body?.string() ?: throw BluelinkUnknownError("Response body is null")
+                val loginResponse = parseResponse<BluelinkLoginResponse>(responseBody)
 
-                if (responseBody != null) {
-                    val loginResponse: BluelinkLoginResponse?
-                    try {
-                        loginResponse = responseAdapter.fromJson(responseBody)
-                    } catch (e: Exception) {
-                        throw BluelinkUnknownError("Failed to parse response: $responseBody")
-                    }
-
-                    if (loginResponse?.result != null) {
-                        return@withContext loginResponse.result.token.accessToken
-                    } else if(loginResponse?.error != null) {
-                        if (loginResponse.error.errorDesc.contains("The login information you entered is incorrect")) {
-                            throw BluelinkIncorrectCredentialsError("Login failed: ${loginResponse.error.errorDesc}")
-                        } else {
-                            throw BluelinkUnknownError("Login failed: ${loginResponse.error.errorDesc}")
-                        }
-                    } else {
-                        throw BluelinkUnknownError("Invalid response from server: no result or error")
-                    }
-
-                } else {
-                    throw BluelinkUnknownError("Invalid response from server: response body is null")
-                }
+                loginResponse?.result?.token?.accessToken ?: handleLoginError(loginResponse)
             }
         }
     }
@@ -75,10 +44,8 @@ class BluelinkCanadaApi : BluelinkApi {
         try {
             apiKey = getApiKey(username, password)
         } catch (e: Exception) {
-            when (e) {
-                is BluelinkIncorrectCredentialsError, is BluelinkUnknownError -> {
-                    return false
-                }
+            return when (e) {
+                is BluelinkIncorrectCredentialsError, is BluelinkUnknownError -> false
                 else -> throw e
             }
         }
@@ -87,48 +54,63 @@ class BluelinkCanadaApi : BluelinkApi {
             val pAuth = verifyPin(apiKey, pin)
             pAuth != null
         } catch (e: Exception) {
-            false
+            return when (e) {
+                is BluelinkIncorrectCredentialsError, is BluelinkUnknownError -> false
+                else -> throw e
+            }
         }
     }
 
     private suspend fun verifyPin(apiKey: String, pin: String): String? {
         val verifyPinUrl = "https://mybluelink.ca/tods/api/vrfypin"
-        val jsonMediaType = "application/json; charset=utf-8".toMediaTypeOrNull()
         val requestBody = """{"pin": "$pin"}""".toRequestBody(jsonMediaType)
-
-        val request = Request.Builder()
-            .url(verifyPinUrl)
-            .post(requestBody)
-            .addHeader("Accesstoken", apiKey)
-            .addHeader("From", "CWP")
-            .addHeader("Language", "0")
-            .addHeader("offset", "-4")
-            .addHeader("content-type", "application/json;charset=UTF-8")
-            .build()
+        val request = buildRequest(verifyPinUrl, requestBody, apiKey)
 
         return withContext(Dispatchers.IO) {
             client.newCall(request).execute().use { response ->
                 if (!response.isSuccessful) return@withContext null
 
-                val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
-                val responseAdapter = moshi.adapter(BluelinkVerifyPinResponse::class.java)
-                val responseBody = response.body?.string()
+                val responseBody = response.body?.string() ?: return@withContext null
+                val verifyPinResponse = parseResponse<BluelinkVerifyPinResponse>(responseBody)
 
-                if (responseBody != null) {
-                    val verifyPinResponse: BluelinkVerifyPinResponse?
-                    try {
-                        verifyPinResponse = responseAdapter.fromJson(responseBody)
-                    } catch (e: Exception) {
-                        return@withContext null
-                    }
-
-                    if (verifyPinResponse?.responseHeader?.responseCode == 0) {
-                        return@withContext verifyPinResponse.result?.pAuth
-                    }
+                if (verifyPinResponse?.responseHeader?.responseCode == 0) {
+                    verifyPinResponse.result?.pAuth
+                } else {
+                    null
                 }
-
-                return@withContext null
             }
+        }
+    }
+
+    private fun buildRequest(url: String, requestBody: okhttp3.RequestBody, apiKey: String? = null): Request {
+        return Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .apply {
+                addHeader("From", "CWP")
+                addHeader("Language", "0")
+                addHeader("offset", "-4")
+                addHeader("content-type", "application/json;charset=UTF-8")
+                apiKey?.let { addHeader("accesstoken", it) }
+            }
+            .build()
+    }
+
+    private inline fun <reified T> parseResponse(responseBody: String): T? {
+        return try {
+            val responseAdapter = moshi.adapter(T::class.java)
+            responseAdapter.fromJson(responseBody)
+        } catch (e: Exception) {
+            throw BluelinkUnknownError("Failed to parse response: $responseBody")
+        }
+    }
+
+    private fun handleLoginError(loginResponse: BluelinkLoginResponse?): Nothing {
+        val errorDesc = loginResponse?.error?.errorDesc
+        if (errorDesc?.contains("The login information you entered is incorrect") == true) {
+            throw BluelinkIncorrectCredentialsError("Login failed: $errorDesc")
+        } else {
+            throw BluelinkUnknownError("Login failed: ${errorDesc ?: "Unknown error"}")
         }
     }
 
