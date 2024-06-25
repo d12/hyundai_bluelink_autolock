@@ -38,7 +38,7 @@ class FragmentBluelinkCredentialsSuccess : Fragment() {
         val imageView = binding.imageView
         Glide.with(this)
             .asGif()
-            .load(R.drawable.checkgif)
+            .load(R.drawable.check)
             .into(object : CustomTarget<GifDrawable>() {
                 override fun onResourceReady(resource: GifDrawable, transition: Transition<in GifDrawable>?) {
                     resource.setLoopCount(1)
