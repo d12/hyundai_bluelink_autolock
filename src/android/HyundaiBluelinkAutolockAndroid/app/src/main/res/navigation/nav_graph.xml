@@ -36,5 +36,14 @@
         android:label="@string/bluelink_credentials_success_label"
         tools:layout="@layout/fragment_bluelink_credentials_success">
 
+        <action android:id="@+id/action_FragmentBluelinkCredentialsSuccess_to_FragmentIdentifyCarBluetooth"
+            app:destination="@id/FragmentIdentifyCarBluetooth"/>
+    </fragment>
+
+    <fragment android:id="@+id/FragmentIdentifyCarBluetooth"
+        android:name="com.example.hyundai_bluelink_autolock_android.FragmentIdentifyCarBluetooth"
+        android:label="Identify Car Bluetooth"
+        tools:layout="@layout/fragment_identify_car_bluetooth">
+
     </fragment>
 </navigation>

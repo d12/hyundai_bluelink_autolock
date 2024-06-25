@@ -31,6 +31,10 @@ class FragmentBluelinkCredentialsSuccess : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _binding?.nextButton?.setOnClickListener {
+            findNavController().navigate(R.id.action_FragmentBluelinkCredentialsSuccess_to_FragmentIdentifyCarBluetooth)
+        }
+
         val imageView = binding.imageView
         Glide.with(this)
             .asGif()
