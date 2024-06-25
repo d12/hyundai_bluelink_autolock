@@ -56,6 +56,7 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
             try {
                 val credentialsValid = bluelinkApi.verifyCredentials(email, password, pin)
                 if (credentialsValid) {
+                    storeCredentials(email, password, pin, country)
                     findNavController().navigate(R.id.action_FragmentOnboardingGatherBluelinkCredentials_to_FragmentBluelinkCredentialsSuccess)
                 } else {
                     // Credentials are invalid
@@ -67,6 +68,15 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
                 showInvalidCredentialsMessage()
             }
         }
+    }
+
+    private fun storeCredentials(email: String, password: String, pin: String, country: String) {
+        val storage = SecureStorage(requireContext())
+
+        storage.storeCredential("email", email)
+        storage.storeCredential("password", password)
+        storage.storeCredential("pin", pin)
+        storage.storeCredential("country", country)
     }
 
     override fun onCreateView(
