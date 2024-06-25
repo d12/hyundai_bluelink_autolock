@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.hyundai_bluelink_autolock_android.api.BluelinkApiFactory
 import com.example.hyundai_bluelink_autolock_android.api.BluelinkCountry
 import com.example.hyundai_bluelink_autolock_android.api.BluelinkIncorrectCredentialsError
@@ -55,7 +56,7 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
             try {
                 val credentialsValid = bluelinkApi.verifyCredentials(email, password, pin)
                 if (credentialsValid) {
-                    println("Valid credentials!")
+                    findNavController().navigate(R.id.action_FragmentOnboardingGatherBluelinkCredentials_to_FragmentBluelinkCredentialsSuccess)
                 } else {
                     // Credentials are invalid
                     showInvalidCredentialsMessage()

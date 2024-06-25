@@ -4,6 +4,7 @@
     <string name="onboarding_intro_label">Setup</string>
     <string name="onboarding_permissions_preface_label">Permissions</string>
     <string name="onboarding_gather_bluelink_credentials_label">Bluelink Credentials</string>
+    <string name="bluelink_credentials_success_label">Success</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="verify">Verify Credentials</string>

@@ -27,6 +27,14 @@
         android:name="com.example.hyundai_bluelink_autolock_android.FragmentOnboardingGatherBluelinkCredentials"
         android:label="@string/onboarding_gather_bluelink_credentials_label"
         tools:layout="@layout/fragment_onboarding_gather_bluelink_credentials">
+        <action android:id="@+id/action_FragmentOnboardingGatherBluelinkCredentials_to_FragmentBluelinkCredentialsSuccess"
+            app:destination="@id/FragmentBluelinkCredentialsSuccess"/>
+
+    </fragment>
+    <fragment android:id="@+id/FragmentBluelinkCredentialsSuccess"
+        android:name="com.example.hyundai_bluelink_autolock_android.FragmentBluelinkCredentialsSuccess"
+        android:label="@string/bluelink_credentials_success_label"
+        tools:layout="@layout/fragment_bluelink_credentials_success">
 
     </fragment>
 </navigation>
