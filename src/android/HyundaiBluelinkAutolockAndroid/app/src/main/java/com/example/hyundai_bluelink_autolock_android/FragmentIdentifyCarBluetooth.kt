@@ -3,6 +3,7 @@ package com.example.hyundai_bluelink_autolock_android
 import BluetoothDeviceAdapter
 import BluetoothDeviceInfo
 import android.Manifest
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -16,6 +17,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.hyundai_bluelink_autolock_android.databinding.FragmentIdentifyCarBluetoothBinding
 
@@ -29,17 +31,29 @@ class FragmentIdentifyCarBluetooth : Fragment() {
 
     private val bluetoothReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == "android.bluetooth.device.action.ACL_DISCONNECTED") {
-                val device = intent.getParcelableExtra<android.bluetooth.BluetoothDevice>(android.bluetooth.BluetoothDevice.EXTRA_DEVICE)
-                device?.let {
-                    val deviceName = if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                        it.name ?: "Unknown"
-                    } else {
-                        "Permission not granted"
+            val action = intent?.action
+            val device = intent?.getParcelableExtra<android.bluetooth.BluetoothDevice>(android.bluetooth.BluetoothDevice.EXTRA_DEVICE)
+            device?.let {
+                val deviceName = if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                    it.name ?: "Unknown"
+                } else {
+                    "Permission not granted"
+                }
+                val deviceInfo = BluetoothDeviceInfo(deviceName, it.address)
+
+                when (action) {
+                    "android.bluetooth.device.action.ACL_CONNECTED" -> {
+                        Log.d("BluetoothConnection", "Device connected: ${deviceInfo.name} - ${deviceInfo.mac}")
+                        if (devices.contains(deviceInfo)) return
+                        devices.add(deviceInfo)
+                        adapter.notifyItemInserted(devices.indexOf(deviceInfo))
                     }
-                    val deviceInfo = BluetoothDeviceInfo(deviceName, it.address)
-                    devices.add(deviceInfo)
-                    adapter.notifyItemInserted(devices.size - 1)
+                    "android.bluetooth.device.action.ACL_DISCONNECTED" -> {
+                        Log.d("BluetoothDisconnection", "Device disconnected: ${deviceInfo.name} - ${deviceInfo.mac}")
+                        if (devices.contains(deviceInfo)) return
+                        devices.add(deviceInfo)
+                        adapter.notifyItemInserted(devices.indexOf(deviceInfo))
+                    }
                 }
             }
         }
@@ -57,7 +71,11 @@ class FragmentIdentifyCarBluetooth : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context?.registerReceiver(bluetoothReceiver, IntentFilter("android.bluetooth.device.action.ACL_DISCONNECTED"))
+        val filter = IntentFilter().apply {
+            addAction("android.bluetooth.device.action.ACL_CONNECTED")
+            addAction("android.bluetooth.device.action.ACL_DISCONNECTED")
+        }
+        context?.registerReceiver(bluetoothReceiver, filter)
     }
 
     override fun onCreateView(
@@ -79,23 +97,35 @@ class FragmentIdentifyCarBluetooth : Fragment() {
         // Set up RecyclerView
         adapter = BluetoothDeviceAdapter(devices) { device ->
             deviceClicked(device.name, device.mac)
-            device.
         }
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
     }
 
     private fun deviceClicked(name: String, mac: String) {
-        println("Device clicked: $name, $mac")
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+        dialogBuilder.setMessage("Are you sure this is your car?\n\n$name")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialog, id ->
+                // Persist the device MAC in storage
+                val sharedPref = activity?.getSharedPreferences(getString(R.string.car_bluetooth_mac_key), Context.MODE_PRIVATE)
+                with(sharedPref?.edit()) {
+                    this?.putString(getString(R.string.car_bluetooth_mac_key), mac)
+                    this?.apply()
+                }
 
-//        Persist the device MAC in storage
-        val sharedPref = activity?.getSharedPreferences(getString(R.string.car_bluetooth_mac_key), Context.MODE_PRIVATE)
-        with (sharedPref?.edit()) {
-            this?.putString(getString(R.string.car_bluetooth_mac_key), mac)
-            this?.apply()
-        }
+                // TODO: On to next fragment!
+                Log.d("DeviceConfirmation", "Device added: $name, $mac")
 
-//        TODO: On to next fragment!
+//                Use action_FragmentIdentifyCarBluetooth_to_FragmentOnboardingComplete
+                findNavController().navigate(R.id.action_FragmentIdentifyCarBluetooth_to_FragmentOnboardingComplete)
+            }
+            .setNegativeButton("No") { dialog, id ->
+                dialog.dismiss()
+            }
+        val alert = dialogBuilder.create()
+        alert.setTitle("Confirm Car Bluetooth")
+        alert.show()
     }
 
     override fun onDestroyView() {

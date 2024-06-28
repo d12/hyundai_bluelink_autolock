@@ -45,5 +45,13 @@
         android:label="Identify Car Bluetooth"
         tools:layout="@layout/fragment_identify_car_bluetooth">
 
+        <action android:id="@+id/action_FragmentIdentifyCarBluetooth_to_FragmentOnboardingComplete"
+            app:destination="@id/FragmentOnboardingComplete"/>
+
+    </fragment>
+    <fragment android:id="@+id/FragmentOnboardingComplete"
+        android:name="com.example.hyundai_bluelink_autolock_android.FragmentOnboardingComplete"
+        android:label="@string/onboarding_complete_label"
+        tools:layout="@layout/fragment_onboarding_complete">
     </fragment>
 </navigation>
