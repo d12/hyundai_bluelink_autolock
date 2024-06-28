@@ -73,10 +73,10 @@ class FragmentOnboardingGatherBluelinkCredentials : Fragment() {
     private fun storeCredentials(email: String, password: String, pin: String, country: String) {
         val storage = SecureStorage(requireContext())
 
-        storage.storeCredential("email", email)
-        storage.storeCredential("password", password)
-        storage.storeCredential("pin", pin)
-        storage.storeCredential("country", country)
+        storage.storeCredential(getString(R.string.bluelink_storage_key_email), email)
+        storage.storeCredential(getString(R.string.bluelink_storage_key_password), password)
+        storage.storeCredential(getString(R.string.bluelink_storage_key_pin), pin)
+        storage.storeCredential(getString(R.string.bluelink_storage_key_country), country)
     }
 
     override fun onCreateView(

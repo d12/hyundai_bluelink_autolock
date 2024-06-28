@@ -35,8 +35,9 @@
     <string name="onboarding_complete_para">
         Onboarding is now complete! You can configure your preferences on the next screen.
     </string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="car_bluetooth_mac_key">car_bluetooth_mac_key</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="bluelink_storage_key_email">email</string>
+    <string name="bluelink_storage_key_password">password</string>
+    <string name="bluelink_storage_key_pin">pin</string>
+    <string name="bluelink_storage_key_country">country</string>
 </resources>

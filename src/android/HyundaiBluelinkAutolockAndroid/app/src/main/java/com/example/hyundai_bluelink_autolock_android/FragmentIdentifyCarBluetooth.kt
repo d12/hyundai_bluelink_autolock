@@ -41,6 +41,7 @@ class FragmentIdentifyCarBluetooth : Fragment() {
                 }
                 val deviceInfo = BluetoothDeviceInfo(deviceName, it.address)
 
+//                Todo, refactor lol
                 when (action) {
                     "android.bluetooth.device.action.ACL_CONNECTED" -> {
                         Log.d("BluetoothConnection", "Device connected: ${deviceInfo.name} - ${deviceInfo.mac}")
@@ -108,19 +109,16 @@ class FragmentIdentifyCarBluetooth : Fragment() {
             .setCancelable(false)
             .setPositiveButton("Yes") { dialog, id ->
                 // Persist the device MAC in storage
-                val sharedPref = activity?.getSharedPreferences(getString(R.string.car_bluetooth_mac_key), Context.MODE_PRIVATE)
+                val sharedPref = activity?.getSharedPreferences("preferences", Context.MODE_PRIVATE)
                 with(sharedPref?.edit()) {
                     this?.putString(getString(R.string.car_bluetooth_mac_key), mac)
                     this?.apply()
                 }
-
-                // TODO: On to next fragment!
                 Log.d("DeviceConfirmation", "Device added: $name, $mac")
 
-//                Use action_FragmentIdentifyCarBluetooth_to_FragmentOnboardingComplete
                 findNavController().navigate(R.id.action_FragmentIdentifyCarBluetooth_to_FragmentOnboardingComplete)
             }
-            .setNegativeButton("No") { dialog, id ->
+            .setNegativeButton("No") { dialog, _ ->
                 dialog.dismiss()
             }
         val alert = dialogBuilder.create()

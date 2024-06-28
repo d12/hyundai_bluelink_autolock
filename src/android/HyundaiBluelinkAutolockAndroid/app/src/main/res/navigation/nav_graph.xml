@@ -3,7 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FragmentOnboardingIntro">
+    app:startDestination="@id/FragmentStartup">
+
+    <fragment
+        android:id="@+id/FragmentStartup"
+        android:name="com.example.hyundai_bluelink_autolock_android.FragmentStartup"
+        android:label="fragment_startup">
+        <action
+            android:id="@+id/action_FragmentStartup_to_FragmentOnboardingIntro"
+            app:destination="@id/FragmentOnboardingIntro" />
+
+        <action android:id="@+id/action_FragmentStartup_to_FragmentStatusAndPreferences"
+            app:destination="@id/FragmentStatusAndPreferences"/>
+    </fragment>
+
+
 
     <fragment
         android:id="@+id/FragmentOnboardingIntro"
@@ -53,5 +67,14 @@
         android:name="com.example.hyundai_bluelink_autolock_android.FragmentOnboardingComplete"
         android:label="@string/onboarding_complete_label"
         tools:layout="@layout/fragment_onboarding_complete">
+
+        <action android:id="@+id/action_FragmentOnboardingComplete_to_FragmentStatusAndPreferences"
+            app:destination="@id/FragmentStatusAndPreferences"/>
+    </fragment>
+
+    <fragment android:id="@+id/FragmentStatusAndPreferences"
+        android:name="com.example.hyundai_bluelink_autolock_android.FragmentStatusAndPreferences"
+        android:label="Hyundai Bluelink Autolock"
+        tools:layout="@layout/fragment_status_and_preferences">
     </fragment>
 </navigation>

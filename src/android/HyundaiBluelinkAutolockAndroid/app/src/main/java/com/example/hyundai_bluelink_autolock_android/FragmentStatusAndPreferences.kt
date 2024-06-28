@@ -8,29 +8,24 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.navigation.fragment.findNavController
 import android.view.ViewGroup
-import com.example.hyundai_bluelink_autolock_android.databinding.FragmentOnboardingCompleteBinding
 import com.example.hyundai_bluelink_autolock_android.databinding.FragmentOnboardingIntroBinding
+import com.example.hyundai_bluelink_autolock_android.databinding.FragmentStatusAndPreferencesBinding
 
-class FragmentOnboardingComplete : Fragment() {
+class FragmentStatusAndPreferences : Fragment() {
 
-    private var _binding: FragmentOnboardingCompleteBinding? = null
+    private var _binding: FragmentStatusAndPreferencesBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentOnboardingCompleteBinding.inflate(inflater, container, false)
+        _binding = FragmentStatusAndPreferencesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    //  When the onboarding_second_para textview is clicked, open https://github.com/d12/hyundai_bluelink_autolock in the browser
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.finishButton.setOnClickListener {
-            findNavController().navigate(R.id.action_FragmentOnboardingComplete_to_FragmentStatusAndPreferences)
-        }
     }
 
     override fun onDestroyView() {
