@@ -40,4 +40,5 @@
     <string name="bluelink_storage_key_password">password</string>
     <string name="bluelink_storage_key_pin">pin</string>
     <string name="bluelink_storage_key_country">country</string>
+    <string name="foreground_service_notification_channel">foreground_service</string>
 </resources>
