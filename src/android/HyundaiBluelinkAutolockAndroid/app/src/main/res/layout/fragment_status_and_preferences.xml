@@ -9,11 +9,19 @@
 
     <TextView
         android:id="@+id/textview_first"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is the main screen!"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Current Status:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@+id/textview_first"
+        app:layout_constraintTop_toTopOf="@+id/textview_first" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

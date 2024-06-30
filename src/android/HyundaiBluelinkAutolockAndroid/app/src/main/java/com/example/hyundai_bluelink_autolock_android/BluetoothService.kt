@@ -1,5 +1,6 @@
 package com.example.hyundai_bluelink_autolock_android
 
+import CarConnectionViewModel
 import android.app.Service
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -12,9 +13,12 @@ import android.os.IBinder
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat.registerReceiver
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
+import com.example.hyundai_bluelink_autolock_android.CarConnectionState
+import com.example.hyundai_bluelink_autolock_android.R
 
 class BluetoothService : Service(), ViewModelStoreOwner {
 
@@ -46,7 +50,7 @@ class BluetoothService : Service(), ViewModelStoreOwner {
     override fun onCreate() {
         super.onCreate()
 
-        viewModel = ViewModelProvider(this).get(CarConnectionViewModel::class.java)
+        viewModel = CarConnectionViewModelSingleton.getInstance(applicationContext)
 
         // Initialize SharedPreferences
         sharedPref = getSharedPreferences("preferences", Context.MODE_PRIVATE)
@@ -67,7 +71,7 @@ class BluetoothService : Service(), ViewModelStoreOwner {
 
         startForeground(1, notification)
 
-        Log.d("BluetoothService", "Service started with initial state: ${viewModel.state}")
+        Log.d("BluetoothService", "Service started with initial state: ${viewModel.state.value}")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -92,14 +96,15 @@ class BluetoothService : Service(), ViewModelStoreOwner {
     private fun onCarDisconnected() {
         transitionState(CarConnectionState.DISCONNECTED_WAITING_FOR_TIMEOUT)
         timeoutRunnable = Runnable {
+//            TODO: Lock the car.
             transitionState(CarConnectionState.NOT_CONNECTED)
         }
         handler.postDelayed(timeoutRunnable!!, 30000) // 30 seconds timeout
     }
 
     private fun transitionState(newState: CarConnectionState) {
-        val oldState = viewModel.state
-        viewModel.state = newState
+        val oldState = viewModel.state.value
+        viewModel.setState(newState)
         Log.d("BluetoothService", "State transitioned from $oldState to $newState")
         if (oldState == CarConnectionState.DISCONNECTED_WAITING_FOR_TIMEOUT && newState == CarConnectionState.CONNECTED) {
             timeoutRunnable?.let { handler.removeCallbacks(it) }

@@ -41,4 +41,8 @@
     <string name="bluelink_storage_key_pin">pin</string>
     <string name="bluelink_storage_key_country">country</string>
     <string name="foreground_service_notification_channel">foreground_service</string>
+    <string name="car_status_connected">Connected to the car.</string>
+    <string name="car_status_waiting_for_timeout">Disconnected, waiting to lock the car.</string>
+    <string name="car_status_not_connected">Not connected to the car.</string>
+    <string name="car_status_unknown">Something is wrong! D:</string>
 </resources>
